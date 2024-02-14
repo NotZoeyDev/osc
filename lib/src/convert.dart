@@ -17,10 +17,14 @@ const OSCMessageCodec oscMessageCodec = OSCMessageCodec();
 
 const StringCodec stringCodec = StringCodec();
 
+const TrueCodec trueCodec = TrueCodec();
+
+const FalseCodec falseCodec = FalseCodec();
+
 abstract class DataCodec<T> extends Codec<T, List<int>> {
   static final List<DataCodec<Object>> codecs =
       List<DataCodec<Object>>.unmodifiable(
-          <DataCodec<Object>>[blobCodec, intCodec, floatCodec, stringCodec]);
+          <DataCodec<Object>>[blobCodec, intCodec, floatCodec, stringCodec, trueCodec, falseCodec]);
 
   final String typeTag;
 
@@ -218,6 +222,74 @@ class StringEncoder extends DataEncoder<String> {
     bytes.addAll(List.generate(pad, (i) => 0));
 
     return bytes;
+  }
+}
+
+class TrueCodec extends DataCodec<bool> {
+  const TrueCodec() : super(typeTag: 'T');
+
+  @override
+  Converter<List<int>, bool> get decoder => const TrueDecoder();
+
+  @override
+  Converter<bool, List<int>> get encoder => const TrueEncoder();
+
+  @override
+  int length(bool value) => 4;
+
+  @override
+  bool toValue(String string) => bool.parse(string);
+}
+
+class TrueDecoder extends DataDecoder<bool> {
+  const TrueDecoder();
+
+  @override
+  bool convert(List<int> input) {
+    return true;
+  }
+}
+
+class TrueEncoder extends DataEncoder<bool> {
+  const TrueEncoder();
+
+  @override
+  List<int> convert(bool input) {
+    return [];
+  }
+}
+
+class FalseCodec extends DataCodec<bool> {
+  const FalseCodec() : super(typeTag: 'F');
+
+  @override
+  Converter<List<int>, bool> get decoder => const FalseDecoder();
+
+  @override
+  Converter<bool, List<int>> get encoder => const FalseEncoder();
+
+  @override
+  int length(bool value) => 4;
+
+  @override
+  bool toValue(String string) => bool.parse(string);
+}
+
+class FalseDecoder extends DataDecoder<bool> {
+  const FalseDecoder();
+
+  @override
+  bool convert(List<int> input) {
+    return false;
+  }
+}
+
+class FalseEncoder extends DataEncoder<bool> {
+  const FalseEncoder();
+
+  @override
+  List<int> convert(bool input) {
+    return [];
   }
 }
 
